@@ -1,6 +1,6 @@
 import { Card, CardContent, Stack, Typography } from '@mui/material'
 import { Box, Container } from '@mui/system'
-import { useEffect } from 'react'
+import { useEffect,useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import Footer from '../component/Footer'
@@ -13,6 +13,7 @@ import { useTheme } from '@emotion/react'
 
 
 const SingleJob = () => {
+
     const { palette } = useTheme();
     const dispatch = useDispatch();
     const { singleJob, loading } = useSelector(state => state.singleJob)
@@ -21,13 +22,26 @@ const SingleJob = () => {
         dispatch(jobLoadSingleAction(id));
     }, [id]);
 
+    const [isApplied, setIsApplied] = useState(false);
+
+    useEffect(() => {
+        // Check if the job has been applied for in localStorage
+        const isJobApplied = localStorage.getItem('isJobApplied');
+        if (isJobApplied === 'true') {
+          setIsApplied(true);
+        }
+      }, []);
+
     const applyForAJob = () => {
         dispatch(userApplyJobAction({
             title: singleJob && singleJob.title,
             description: singleJob && singleJob.description,
             salary: singleJob && singleJob.salary,
             location: singleJob && singleJob.location
+            
         }))
+        setIsApplied(true);
+        localStorage.setItem('isJobApplied', 'true');
     }
 
     return (
@@ -72,7 +86,14 @@ const SingleJob = () => {
                             </Box>
                             <Box sx={{ flex: 1, p: 2 }}>
                                 <Card sx={{ p: 2, bgcolor: palette.primary.white }}>
-                                    <Button onClick={applyForAJob} sx={{ fontSize: "13px" }} variant='contained'>Applied for this Job</Button>
+
+                                    {!isApplied && (
+                                        <Button onClick={applyForAJob} sx={{ fontSize: "13px" }} variant='contained'>Applied for this Job</Button>
+                                    )}
+                                    {isApplied && (
+                                        <p>Job Applied</p>
+                                    )}
+                                        
                                 </Card>
                             </Box>
 
