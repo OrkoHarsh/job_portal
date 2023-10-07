@@ -25,24 +25,32 @@ const SingleJob = () => {
     const [isApplied, setIsApplied] = useState(false);
 
     useEffect(() => {
-        // Check if the job has been applied for in localStorage
-        const isJobApplied = localStorage.getItem('isJobApplied');
+        // Check local storage to see if the job has been applied for
+        const isJobApplied = localStorage.getItem(`isJobApplied-${id}`);
         if (isJobApplied === 'true') {
-          setIsApplied(true);
+            setIsApplied(true);
         }
-      }, []);
+    }, [id]);
 
     const applyForAJob = () => {
+        if(!isApplied){
         dispatch(userApplyJobAction({
             title: singleJob && singleJob.title,
             description: singleJob && singleJob.description,
             salary: singleJob && singleJob.salary,
             location: singleJob && singleJob.location
-            
-        }))
+        }));
+
+    
+        // Update the state to indicate that the user has applied for the job
         setIsApplied(true);
-        localStorage.setItem('isJobApplied', 'true');
+    
+        // Optionally, you can set a flag in localStorage to remember the application status
+        localStorage.setItem(`isJobApplied-${id}`, 'true');
+        }
     }
+
+
 
     return (
         <>
@@ -87,12 +95,21 @@ const SingleJob = () => {
                             <Box sx={{ flex: 1, p: 2 }}>
                                 <Card sx={{ p: 2, bgcolor: palette.primary.white }}>
 
-                                    {!isApplied && (
+                                    {/* {!isApplied && (
                                         <Button onClick={applyForAJob} sx={{ fontSize: "13px" }} variant='contained'>Applied for this Job</Button>
                                     )}
                                     {isApplied && (
                                         <p>Job Applied</p>
+                                    )} */}
+
+                                    {!isApplied ? (
+                                            <Button onClick={applyForAJob} sx={{ fontSize: "13px" }} variant='contained'>Apply for this Job</Button>
+
+                                    ) : (
+                                        <p>Job Applied</p>
+
                                     )}
+
                                         
                                 </Card>
                             </Box>
